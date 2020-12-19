@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <title>Netflix Clone</title>
+        <style>
+            /* Global Style */
+            * {
+                padding: 0px;
+                margin: 0px;
+                box-sizing: border-box;
+            }
+
+            h1 {
+                background-color: transparent;
+            }
+
+            a {
+                text-decoration: none;
+                color: white;
+            }
+
+            body {
+                background-color: black;
+                color: white;
+                font-family: bahnschrift;
+                text-transform: capitalize;
+            }
+
+            .navigation {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                position: fixed;
+                width: 100%;
+                height: 7vh;
+                z-index: 1;
+
+            }
+
+            .navigation h1 {
+                color: maroon;
+                font-weight: bold;
+                letter-spacing: 1px;
+                font-size: 2rem;
+            }
+
+            .navigation img {
+                width: 50px;
+                border-radius: 20px;
+            }
+
+            /* Banner Style */
+            .banner {
+                display: flex;
+                width: 100%;
+                flex-direction: column;
+                padding: 10px;
+                height: 85vh;
+                justify-content: center;
+
+            }
+
+            .banner h1 {
+                margin: 5px 0px;
+                text-shadow: 2px 2px 2px black;
+                font-size: 2.5rem;
+                width: 60%;
+            }
+
+            .banner a {
+                padding: 6px 10px;
+                background: rgba(0, 0, 0, 0.3);
+                margin: 2px 5px;
+            }
+
+            .banner a:hover {
+                color: gray;
+            }
+
+            .banner p {
+                margin: 5px 0px;
+                width: 60%;
+            }
+
+            .videos h1 {
+                margin: 10px;
+            }
+
+            .netflixVideos {
+                display: flex;
+                overflow-x: scroll;
+                overflow-y: hidden;
+                justify-content: left;
+                height: 45vh;
+                padding: 20px 10px;
+            }
+
+            .netflixVideos img {
+                margin: 10px;
+
+                width: 15%;
+                transition-property: all;
+                transition-timing-function: linear;
+                transition-delay: 0.2s;
+                transition-duration: 0.2s;
+                box-shadow: 0px 10px 10px -9px #221e1e;
+                border-color: 10px;
+            }
+
+            .netflixVideos img:hover {
+                transform: scale(1.05, 1.05);
+            }
+
+            .netflixVideos::-webkit-scrollbar {
+                display: none;
+
+            }
+
+            /* Responsive  */
+            @media Screen and (min-device-width:200px) and (max-device-width:1024px) {
+
+                .banner h1,
+                .banner p {
+
+                    width: 80%;
+                }
+
+                .netflixVideos img {
+
+
+                    width: 35%;
+
+                }
+
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <nav class="navigation" id="nav">
+            <h1>NETFLIX</h1>
+            <img src="avtar.png" alt="Not Found" srcset="">
+        </nav>
+
+
+        <section class="banner" id="banner">
+            <h1></h1>
+            <div>
+                <a href="#">Play</a><a href="#">Join List</a>
+            </div>
+            <p></p>
+        </section>
+
+        <div class="videos">
+            <h1>Netflix Original</h1>
+            <div class="netflixVideos" id="net0"></div>
+            <h1>Trending</h1>
+            <div class="netflixVideos" id="net1"></div>
+            <h1>Top rated</h1>
+            <div class="netflixVideos" id="net2"></div>
+            <h1>Action Movies</h1>
+            <div class="netflixVideos" id="net3"></div>
+            <h1>Comedy Movies</h1>
+            <div class="netflixVideos" id="net4"></div>
+            <h1>Horror Movies</h1>
+            <div class="netflixVideos" id="net5"></div>
+            <h1>Romance Movies</h1>
+            <div class="netflixVideos" id="net6"></div>
+            <h1>Documentary Movies</h1>
+            <div class="netflixVideos" id="net7"></div>
+        </div>
+
+        <script>
+            const APIKEY = "44d53f4e5c5be763edb3154c100ca7de";
+            const req = [`https://api.themoviedb.org/3/discover/tv?api_key=${APIKEY}&with_networks=213`, `https://api.themoviedb.org/3/trending/all/week?api_key=${APIKEY}&language=en-US`, `https://api.themoviedb.org/3/movie/top_rated?api_key=${APIKEY}&language=en-US`, `https://api.themoviedb.org/3/discover/movie?api_key=${APIKEY}&with_genres=28`, `https://api.themoviedb.org/3/discover/movie?api_key=${APIKEY}&with_genres=35`, `https://api.themoviedb.org/3/discover/movie?api_key=${APIKEY}&with_genres=27`, `https://api.themoviedb.org/3/discover/movie?api_key=${APIKEY}&with_genres=10749`, `https://api.themoviedb.org/3/discover/movie?api_key=${APIKEY}&with_genres=99`];
+            let arry = [];
+            let bgImage = '';
+            let imageBaseUrl = 'https://image.tmdb.org/t/p/original/';
+            let banner = document.getElementById('banner');
+
+            function backgroundImage(index) {
+
+                fetch(req[index]).then((data) => {
+                    return data.json();
+                }).then((actualData) => {
+                    let ran = Math.floor(Math.random() * actualData.results.length);
+
+                    banner.childNodes[1].innerHTML = actualData.results[ran].title;
+                    banner.childNodes[5].innerHTML = actualData.results[ran].overview;
+                    banner.style.background = `linear-gradient(transparent, black), url(${imageBaseUrl + actualData.results[ran].poster_path})`;
+                    banner.style.backgroundSize = 'cover';
+
+                    banner.style.backgroundRepeat = 'no-repeat';
+
+
+                })
+            }
+
+            function Request(index) {
+                let images = document.getElementById(`net${index}`);
+                fetch(req[index]).then((data) => {
+                    return data.json();
+                }).then((actualData) => {
+                    arry = actualData.results;
+                    console.log(arry[0]);
+                    for (i = 0; i < arry.length; i++) {
+                        images.innerHTML += `<img src=${imageBaseUrl + arry[i].backdrop_path} alt='Not Found'>`;
+                    }
+                })
+            }
+            backgroundImage(1);
+            Request(0);
+            Request(1);
+            Request(2);
+            Request(3);
+            Request(4);
+            Request(5);
+            Request(6);
+            Request(7);
+            setInterval(() => {
+                let nav = document.getElementById('nav');
+                if (scrollY > 0) {
+
+                    nav.style.backgroundColor = 'black';
+                }
+                else {
+                    nav.style.backgroundColor = 'transparent';
+                }
+            }, 0);
+
+        </script>
+
+    </body>
+
+</html>
